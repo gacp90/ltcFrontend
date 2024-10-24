@@ -1,0 +1,386 @@
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ClientsService } from 'src/app/services/clients.service';
+import { InventoryService } from 'src/app/services/inventory.service';
+import { InvoicesService } from 'src/app/services/invoices.service';
+import { SearchService } from 'src/app/services/search.service';
+
+import { environment } from '../../../environments/environment';
+import { Items } from 'src/app/interfaces/items.interface';
+import { _Payments } from 'src/app/models/invoices.model';
+import Swal from 'sweetalert2';
+import { Inventory } from 'src/app/models/inventory.model';
+import { Client } from 'src/app/models/clients.model';
+
+const local_url = environment.local_url;
+
+interface _invoice{
+  amount: number,
+  vueltos: number,
+  items: Items[],
+  client?: string,
+  payments?: _Payments[],
+}
+
+@Component({
+  selector: 'app-facturar',
+  templateUrl: './facturar.component.html',
+  styleUrls: ['./facturar.component.css']
+})
+export class FacturarComponent implements OnInit {
+
+  constructor(  private productsService: InventoryService,
+                private clientsService: ClientsService,
+                private searchService: SearchService,
+                private fb: FormBuilder,
+                private invoicesService: InvoicesService) { }
+
+  ngOnInit(): void {
+
+    this.client = {
+      name: 'Consumidor Final',
+      cedula: '222222222222',
+      email: ''
+    }
+  }
+
+  /** ================================================================
+   *   BUSCAR PRODUCTO POR CODIGO
+  ==================================================================== */
+  @ViewChild('search') search!: ElementRef;
+  searchCode( sku: any ){
+
+    if (sku.length === 0) {
+      return;
+    }
+
+    this.productsService.loadProductCode(sku)
+        .subscribe( ({product}) => {
+
+          if (product === null || !product.status) {
+            Swal.fire('No se encontro el producto', 'Verifica si el codigo de barras es correcto o si el producto a sido eliminado, he intenta de nuevo!', 'warning');
+            return;
+          }
+          
+          if(product.inventory <= 0){
+            Swal.fire('Agotado', 'Este producto esta agotado', 'warning');
+          }
+
+          this.addItem(product, 1, product.price);
+          this.search.nativeElement.value = '';
+          this.search.nativeElement.onFocus = true;
+
+        }, (err) => {
+          Swal.fire('Error', err.error.msg, 'error');
+          console.log(err);
+          
+        })
+
+  }
+
+  /** ===================================================================
+   * SEARCH ITEMS
+  ======================================================================= */
+  @ViewChild ('searchII') searchII!: ElementRef;
+  public itemsList: Inventory[] = [];
+  searchItems(termino: string){
+
+    let query = `desde=${0}&hasta=${50}`;
+
+    if (termino.length === 0) {
+      this.itemsList = []
+      return;
+    }
+    
+    this.searchService.search('inventory', termino, query)
+        .subscribe( ({resultados}) => {
+          
+          this.itemsList = resultados;
+        });   
+
+  }
+
+  /** ================================================================
+   *   DELETE ITEM
+  ==================================================================== */
+  deleteItem(i: any){
+
+    this.items.splice(i, 1);
+    this.sumarTotales();
+
+  }
+
+  /** ================================================================
+   *   AGREGAR O QUITAR CANTIDADES DE ITEM
+  ==================================================================== */
+  addQuantity(sku: string, qty: number){
+
+    this.items.map( (it) => {
+
+      if (it.sku === sku) {
+        it.quantity += qty;
+
+        if (it.quantity <= 0) {
+          it.quantity = 1;
+        }        
+      }
+
+    })
+
+    this.sumarTotales();
+
+  }
+
+  /** ================================================================
+   *   AGREGAR AL CARRITO DE COMPRAS
+  ==================================================================== */
+  public items: Items[] = [];
+  addItem(product: Inventory, qty: number, price: number){
+
+    const validarItem = this.items.findIndex( (item) => {
+      if (item.sku === product.sku) {
+        return true;
+      }else{
+        return false;
+      }
+    });
+
+    // AGREGAMOS A LA LISTA DE ITEMS
+    if (validarItem === -1) {      
+      this.items.push({
+        sku: product.sku,
+        quantity: qty,
+        price: price,
+        cost: product.cost,
+        description: product.name,
+      })
+    }else{
+      this.items.map( (item) => {
+        if (item.sku === product.sku) {
+          item.quantity = (item.quantity + qty)
+        }
+      })
+    }
+
+    this.itemsList = [];
+    this.searchII.nativeElement.value = '';
+
+    // SUMAR TOTALES
+    this.sumarTotales();
+
+
+  }
+
+  /** ================================================================
+   *   SUMAR TOTALES
+  ==================================================================== */
+  public total: number = 0;
+  sumarTotales(){
+
+    this.total = 0;
+
+    for (const item of this.items) {
+      this.total = this.total + (item.quantity * item.price);
+    }
+
+  }
+
+  /** ================================================================
+   *  PAGOS
+  ==================================================================== */
+  @ViewChild('montoP') montoP!: ElementRef;
+  public restante: number = 0;
+  public payments: _Payments[] = [];
+  
+  addPay(monto: any, type: string){
+
+    monto = Number(monto);
+
+    this.payments.push({
+      type,
+      monto
+    });
+
+    this.restante = 0;
+    for (const pay of this.payments) {
+      this.restante = this.restante + pay.monto;
+    }
+
+    this.restante = this.restante - this.total;
+
+    this.montoP.nativeElement.onFocus = true;
+    this.montoP.nativeElement.value = '';
+
+
+  }
+
+  delPay(pay: any){    
+
+    this.payments.splice( pay, 1 );
+    this.restante = 0;
+    for (const pay of this.payments) {
+      this.restante = this.restante + pay.monto;
+    }
+
+    this.restante = this.restante - this.total;
+    this.montoP.nativeElement.onFocus = true;
+    this.montoP.nativeElement.value = '';
+
+  }
+
+  /** ================================================================
+  /** ================================================================
+  /** ================================================================
+   *   CLIENTS
+  ==================================================================== */
+  @ViewChild('searchC') searchC!: ElementRef;
+  public listClients: Client[] = [];
+  public client!: Client;
+
+  searchClient(termino: string){
+
+    if (termino.length === 0 || termino.length < 3) {
+      this.listClients = [];
+      return;
+    }
+
+    this.searchService.search('clients', termino)
+        .subscribe( ({resultados}) => {
+          
+          this.listClients = resultados;
+
+        }, (err) =>{
+          console.log(err);
+          Swal.fire('Error', err.error.msg, 'error');          
+        })
+
+  }
+
+  /** ================================================================
+   *  SELECT CLIENT
+  ==================================================================== */
+  selectClient(client: Client){
+
+    this.client = client;
+    this.listClients = [];
+    this.searchC.nativeElement.value = '';
+
+  }
+
+  /** ================================================================
+   *  CREATE CLIENTS
+  ==================================================================== */
+  public newClientSubmitted: boolean = false;
+  public newClient = this.fb.group({
+    name: ['', [Validators.required]],
+    lastname: '',
+    cedula: ['', [Validators.required]],
+    phone: '',
+    email: ['', [Validators.required]],
+    address: '',
+    city: '',
+    department: '',
+    party_type: 'PERSONA_NATURAL'
+  })
+
+  createClient(){
+
+    this.newClientSubmitted = true;
+
+    if (this.newClient.invalid) {
+      return;
+    }
+
+    this.clientsService.createClient(this.newClient.value)
+        .subscribe( ({ client }) => {
+
+          this.client = client;
+          this.newClientSubmitted = false;
+          this.newClient.reset({
+            party_type: 'PERSONA_NATURAL'
+          });
+
+          Swal.fire('Estupendo', 'Se ha creado el cliente correctamente', 'success');
+
+        }, (err) => {
+          console.log(err);
+          Swal.fire('Error', err.error.msg, 'error');          
+        })
+
+  }
+
+  /** ================================================================
+   *  VALIDAR FORM
+  ==================================================================== */
+  validateClient(campo: string): boolean{
+
+    if (this.newClientSubmitted && this.newClient.get(campo)?.invalid) {
+      return true;    
+    }else{
+      return false;
+    }
+
+  }
+
+  /** ================================================================
+  /** ================================================================
+  /** ================================================================
+   *  CREATE INVOICE
+  ==================================================================== */
+  public facturando: boolean = false;
+  createInvoice(){
+
+    if (this.restante < 0) {
+      Swal.fire('Atención', 'No ha cancelado el total de la factura', 'warning');
+      return;
+    }
+
+    this.facturando = true;
+
+    const invoice: _invoice = {
+      amount: this.total,
+      items: this.items,
+      payments: this.payments,
+      vueltos: this.restante
+    }
+
+    if (this.client.cedula !== '222222222222') {
+      invoice.client = this.client.cid!
+    }
+
+    this.invoicesService.createInvoice(invoice)
+        .subscribe( ({invoice}) =>{
+
+          console.log(invoice);
+          
+
+          this.facturando = false;
+          
+          this.items = [];
+          this.payments = [];
+          this.restante = 0;
+          this.sumarTotales();
+
+          this.client = {
+            name: 'Consumidor Final',
+            cedula: '222222222222',
+            email: '',
+            address: '',
+            phone: ''
+          };
+
+          Swal.fire('Estupendo', 'Se ha creado la factura exitosamente!', 'success');
+
+          window.open(`${local_url}/dashboard/factura/${invoice.iid}`, '_blank');
+
+        }, (err) => {
+          this.facturando = false;
+          console.log(err);
+          Swal.fire('Error', err.error.msg, 'error');          
+        })
+    
+    
+
+  }
+
+}

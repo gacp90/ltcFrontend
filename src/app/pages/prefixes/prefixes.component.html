@@ -1,0 +1,123 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Lista de Prefijos</h4>
+                <h6 class="card-subtitle"></h6>
+                <div class="table-responsive">
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list" data-page-size="10">
+                        <thead>
+
+                            <!-- usuario name role address img valid status fecha -->
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="prefixes.length === 0">
+                                <td colspan="3">No se ha creado ningun prefijo...</td>
+                            </tr>
+
+                            <tr *ngFor="let prefijo of prefixes">
+                                <td> {{ prefijo.name }} </td>
+                                <td>
+                                    <span *ngIf="prefijo" class="label label-success">Activo</span>
+                                    <span *ngIf="!prefijo" class="label label-danger">Desactivo</span>
+                                </td>
+                                <td>
+                                    <button (click)="prefixSelect = prefijo" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="modal" data-target="#edit-prefix"><i class="ti-pencil" aria-hidden="true"></i></button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2">
+                                    <button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#add-prefix">Crear Prefijo</button>
+                                </td>
+
+                                <td colspan="7">
+                                    <div class="text-right">
+                                        <ul class="pagination"> </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================= 
+MODAL AGREGAR PREFIJO
+======================================================== -->
+<div id="add-prefix" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="add-prefix-modal" aria-hidden="true" #modalNewUser>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="add-prefix-modal">Nuevo Prefijo</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal form-material" autocomplete="off" [formGroup]="formCreate" (ngSubmit)="createPrefix()">
+
+                    <div class="form-group has-danger">
+
+                        <div class="col-md-12 m-b-20">
+                            <input formControlName="name" type="text" class="form-control" placeholder="Nombre">
+                            <div *ngIf="validate('name')" class="form-control-feedback">
+                                <small> El nombre del prefijo es obligatorio </small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-info waves-effect btn-block">Crear</button>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<!-- ========================================================= 
+MODAL EDITAR PREFIJO
+======================================================== -->
+<div id="edit-prefix" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="edit-prefix-modal" aria-hidden="true" #modalNewUser>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="edit-prefix-modal">Editar Prefijo</h4>
+            </div>
+            <div class="modal-body">
+
+                <div *ngIf="prefixSelect">
+                    <div class="form-group">
+                        <div class="col-md-12 m-b-20">
+                            <input type="text" class="form-control" placeholder="Nombre" [value]="prefixSelect.name" #prefijoIn>
+                        </div>
+                    </div>
+                    <button type="button" (click)="updatePrefix(prefijoIn.value)" class="btn btn-info waves-effect btn-block">Actualizar</button>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

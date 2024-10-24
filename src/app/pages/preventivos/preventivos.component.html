@@ -1,0 +1,171 @@
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<div class="row">
+    <div class="col-12">
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Lista de mantenimientos preventivos</h4>
+                <h6 class="card-subtitle">Crea y visualiza todos los mantenimientos preventivos</h6>
+
+                <div class="row m-t-40">
+
+                    <!-- Column -->
+                    <div class="col-md-6 col-lg-3 col-xlg-3">
+                        <div class="card">
+                            <div class="box bg-info text-center">
+                                <h1 class="font-light text-white"> {{ total }} </h1>
+                                <h6 class="text-white">Total Preventivos</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Column -->
+
+                    <!-- <div class="col-md-6 col-lg-3 col-xlg-3">
+                        <div class="card">
+                            <div class="box bg-primary text-center">
+                                <h1 class="font-light text-white">1,738</h1>
+                                <h6 class="text-white">Pendientes</h6>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!-- Column -->
+                    <!-- <div class="col-md-6 col-lg-3 col-xlg-3">
+                        <div class="card">
+                            <div class="box bg-dark text-center">
+                                <h1 class="font-light text-white">964</h1>
+                                <h6 class="text-white">Terminados</h6>
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- Column -->
+
+                </div>
+
+                <!-- SEARCH BTN NEW -->
+                <div class="d-flex justify-content-between flex-wrap mt-1">
+                    <div class="my-2">
+                        <input type="text" id="demo-input-search2" placeholder="Buscar Preventivos" (keyup)="search(buscador.value)" (keyup.enter)="search(buscador.value)" class="form-control m-0" #buscador>
+                        <small *ngIf="resultados > 0" class="text-muted animated fadeIn">Resultados: {{resultados}}</small>
+                    </div>
+
+                    <div class="my-2">
+
+                        <div>
+                            <button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#new-preventivo">Crear Preventivo</button>
+                        </div>
+
+                        <label for="mostrar" class="my-2">Mostrar: </label>
+                        <select name="" id="" [value]="limite" #mostrar (change)="limiteChange(mostrar.value)">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="250">250</option>
+                            <option value="500">500</option>
+                        </select>
+
+                    </div>
+                </div>
+                <!-- SEARCH BTN NEW -->
+
+                <div class="table-responsive">
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover no-wrap contact-list" data-page-size="10">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Producto</th>
+                                <th>Ubicación</th>
+                                <th>Tecnico</th>
+                                <th>Cliente</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="preventives.length === 0">
+                                <td colspan="7">
+                                    <h3 class="mb-0 text-center"> Aun no existen registros de mantenimientos preventivos... </h3>
+                                </td>
+                            </tr>
+
+                            <ng-container *ngIf="preventives.length > 0">
+
+                                <tr *ngFor="let preventive of preventives">
+                                    <td class="align-middle">
+                                        <a [routerLink]="['/dashboard/preventivo', preventive.preid ]" class="text-decoration-none text-info pointer">
+                                            {{ preventive.control }} 
+                                        </a>
+                                    </td>
+                                    <td class="align-middle"> {{ preventive.product.code }} </td>
+                                    <td class="align-middle"> {{ preventive.product.ubicacion || 'Sin ubicación' }} </td>
+                                    <td class="align-middle"> {{ preventive.staff.name }} </td>
+                                    <td class="align-middle" data-toggle="tooltip" data-placement="top" title="{{preventive.client.name}}" data-original-title="Tooltip on top">
+                                        {{ preventive.client.name }}
+                                    </td>
+                                    <td class="align-middle">
+                                        <span *ngIf="!preventive.status" class="label label-danger"> Eliminado </span>
+                                        <span *ngIf="preventive.status && preventive.estado == 'Pendiente'" class="label label-warning"> {{ preventive.estado }} </span>
+                                        <span *ngIf="preventive.status && preventive.estado == 'Terminado'" class="label label-success"> {{ preventive.estado }} </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <p *ngIf="!preventive.checkin" class="mb-0 text-muted">
+                                            <small>
+                                                {{ preventive.date | date:'short' }} 
+                                            </small>
+                                        </p>
+
+                                        <p *ngIf="preventive.checkin" class="mb-0 text-success">
+                                            <small>
+                                                {{ preventive.checkin | date:'short' }} 
+                                            </small>
+                                        </p>
+
+                                        <p *ngIf="preventive.checkout" class="mb-0 text-danger">
+                                            <small>
+                                                {{ preventive.checkin | date:'medium' }} 
+                                            </small>
+                                        </p>
+                                    </td>
+                                    <td class="align-middle">
+
+                                        <a [routerLink]="['/dashboard/preventivo', preventive.preid ]" class="text-decoration-none text-info pointer">
+                                            <i class="mdi mdi-call-made"></i>
+                                        </a>
+                                        <button [disabled]="user.role !== 'ADMIN'" (click)="deletePreventive(preventive.preid)" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn">
+                                            <i *ngIf="preventive.status" class="ti-close" aria-hidden="true"></i>
+                                            <i *ngIf="!preventive.status" class="ti-reload" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </ng-container>
+
+
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+
+                                <td colspan="7">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                        <button [disabled]="desde === 0" (click)="cambiarPagina(-10)" type="button" class="btn btn-dark text-white">Atras</button>
+                                        <button [disabled]="( desde + limite ) >= total" (click)="cambiarPagina(10)" type="button" class="btn btn-dark text-white">Siguiente</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End PAge Content -->
+<!-- ============================================================== -->
+<app-createpreventives (newPreventive)="loadPreventives()"></app-createpreventives>

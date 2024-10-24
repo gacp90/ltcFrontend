@@ -1,0 +1,140 @@
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row" *ngIf="abonado">
+    <!-- Column -->
+    <div class="col-lg-4 col-xlg-3 col-md-5">
+        <div class="card">
+            <div class="card-body">
+                <div class="m-t-30 text-center">
+                    <img src="../assets/images/users/5.jpg" class="img-circle" width="150" />
+                    <h4 class="card-title m-t-10"> {{ abonado.name }} </h4>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Column -->
+    <!-- Column -->
+    <div class="col-lg-8 col-xlg-9 col-md-7">
+        <div class="card">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs profile-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#clientes" role="tab">Cuentas</a>
+                </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+
+                <!-- =================================
+                    CLIENTS
+                ================================== -->
+                <div class="tab-pane active" id="clientes" role="tabpanel">
+
+                    <div class="card-body">
+
+                        <div class="d-flex flex-column">
+
+                            <div>
+                                <h4 class="card-title"><span class="lstick"></span>Cuentas Asignadas</h4>
+                            </div>
+
+                            <!-- LISTADO DE CLIENTES -->
+                            <div class="my-2">
+                                <input type="text" id="demo-input-search2" placeholder="Buscar Clientes" (keyup)="search(buscador.value)" class="form-control m-0" #buscador>
+                                <small *ngIf="resultados > 0" class="text-muted animated fadeIn">Resultados: {{resultados}}</small>
+
+                                <div *ngIf="clients.length > 0" class="list-group list-group-flush shadow w-100" style="min-width: 80%; max-height:400px; overflow-y: scroll; z-index: 500; ">
+
+                                    <ng-container *ngFor="let client of clients ">
+                                        <button (click)="addClient(client.cid!)" type="button" class="list-group-item list-group-item-action pointer animated fadeIn fast" data-dismiss="modal ">
+                                                <div class="d-flex w-100 justify-content-between ">
+                                                    <div>
+                                                        <h5 class="mb-1 text-break fw-bolder ">{{ client.name }}</h5>
+                                                        <small class="mb-1 text-break fw-bolder text-muted">{{ client.address }}</small>
+                                                    </div>
+                                                    <small> 
+                                                        <span *ngIf="client.status " class="label label-success "> Activo </span>
+                                                        <span *ngIf="!client.status " class="label label-danger "> Desactivado </span>
+                                                    </small>
+                                                </div>
+                                                <p class="mb-1 " *ngIf="client?.city" > <i class="mdi mdi-map-marker"></i> {{ client?.city }} </p>
+                                                <!-- <p class="mb-1 " *ngIf="product?.brand" > <i class="mdi mdi-camera-iris"></i> {{ product?.brand }} </p> -->
+                                                <!-- <p class="mb-1 " *ngIf="product.client?.name " > <i class="mdi mdi-account-outline"></i> {{ product.client?.name }} </p> -->
+                                                <!-- <small *ngIf="client.address " class="text-break "> 
+                                                    <span *ngIf="client.city " > <i class="mdi mdi-map-marker "></i> {{ client.city }} - </span> {{ client.address }} 
+                                                </small>                           -->
+                                                
+                                            </button>
+                                    </ng-container>
+
+                                </div>
+
+                            </div>
+                            <!-- LISTADO DE CLIENTES -->
+
+                        </div>
+
+                        <div class="table-responsive m-t-20">
+                            <table class="table vm no-th-brd no-wrap pro-of-month">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>#</th>
+                                        <th>Cliente</th>
+                                        <th>Direccion</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr *ngIf="abonado.clients.length === 0">
+                                        <td colspan="5">
+                                            <h4 class="mb-0 text-muted text-center"> No tiene cuentas agregadas ...</h4>
+                                        </td>
+                                    </tr>
+
+                                    <tr *ngFor="let client of abonado.clients; let i = index">
+                                        <!-- products-client -->
+                                        <td>
+                                            <button (click)="delClient(client.client._id)" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Eliminar">
+                                                <small>
+                                                    <i class="ti-close" aria-hidden="true"></i>
+                                                </small>
+                                            </button>
+                                        </td>
+                                        <td> {{ i+1 }} </td>
+                                        <td>
+                                            {{ client.client.name }}
+                                        </td>
+                                        <td> {{ client.client.address }} <span> {{ client.client.department }}</span> </td>
+                                        <td>
+                                            <span *ngIf="client.client.status" class="label label-success"> Activo </span>
+                                            <span *ngIf="!client.client.status" class="label label-danger"> Desactivado </span>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- =================================
+                    CLIENTS
+                ================================== -->
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+    <!-- Column -->
+</div>
+<!-- Row -->
+<!-- ============================================================== -->
+<!-- End PAge Content -->
+<!-- ============================================================== -->

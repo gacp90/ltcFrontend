@@ -1,0 +1,241 @@
+<!-- INFO PRODUCT -->
+<div class="card w-100">
+    <div class="card-body">
+
+        <div *ngIf="product">
+
+            <div class="d-flex flex-row flex-wrap gap-2 mb-3">
+
+                <div class="col-md-4">
+                    <img [src]="product.img | imagen: 'products' " alt="image" class="img-responsive img-rounded" width="150">
+                </div>
+
+                <div class="d-flex flex-column">
+                    <p class="mb-2 fw-bolder text-info">PRODUCTO:</p>
+                    <h3 class="mb-2 fw-bold fs-2">Codigo: {{ product.code }} </h3>
+                    <p class="mb-2 text-muted">Frecuencia de mantenimiento: {{ product.frecuencia }} meses </p>
+
+                    <button *ngIf="product.client?.name" class="text-truncate btn btn-block btn-outline-success btn-sm btn-rounded text-break mb-2" (click)="product = product" type="button" data-toggle="modal" data-target="#client-product" style="max-width: 12rem;">
+                        <span data-toggle="tooltip" [title]="product.client.name">
+                            {{ product.client?.name }}
+                        </span>
+                    </button>
+
+                    <button *ngIf="!product.client?.name && product.estado != 'Instalada'" (click)="product = product" type="button" class="btn btn-sm btn-icon btn-pure btn-info delete-row-btn text-break mb-2" data-toggle="modal" data-target="#client-product">
+                        <i class="mdi mdi-account-plus" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-outline-primary" data-toggle="modal" data-target="#new-preventivo">Crear Preventivo</button>
+                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-outline-danger mt-2" data-toggle="modal" data-target="#new-correctivo">Crear Correctivo</button>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-3 col-xs-6 b-r"> <strong class="fw-bold">Serial</strong>
+                    <br>
+                    <p class="text-muted">{{ product.serial }}</p>
+                </div>
+
+                <div class="col-md-3 col-xs-6 b-r"> <strong class="fw-bold">Marca</strong>
+                    <br>
+                    <p class="text-muted"> {{ product.brand }} </p>
+                </div>
+
+                <div class="col-md-3 col-xs-6 b-r"> <strong class="fw-bold">Modelo</strong>
+                    <br>
+                    <p class="text-muted"> {{ product.model }} </p>
+                </div>
+
+                <div class="col-md-3 col-xs-6"> <strong class="fw-bold">Año</strong>
+                    <br>
+                    <p class="text-muted"> {{ product.year }} </p>
+                </div>
+            </div>
+
+            <!-- UBICACION -->
+            <div>
+                <strong class="fw-bold">Ubicación</strong>
+                <br>
+                <p class="text-muted"> {{ product.ubicacion || 'Aun no se ha asignado una ubicación' }} </p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<!-- INFO PRODUCT -->
+
+<!-- HISTORIAL ITEMS -->
+<div class="card w-100">
+    <div class="card-body">
+        <h4 class="card-title">Historial de repuestos</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="logProducts.length == 0">
+                        <td colspan="8">
+                            <h3 class="mb-0 text-center"> Aun no existen registros de historial de repuesto... <br> <span class="fw-bold">Nota:</span> Esta función es nueva, buscar en los mantenimientos anteriores o en el modulo de movimientos</h3>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let product of logProducts">
+
+                        <td>{{product.sku}}</td>
+                        <td>
+                            {{product.name}}
+                        </td>
+                        <td>
+                            <span *ngIf="!product.invoice && !product.preventive && !product.corrective">
+                                {{product.description}}
+                            </span>
+                            <a *ngIf="product.invoice" [routerLink]="['/dashboard/factura', product.invoice]">
+                                {{product.description}}
+                            </a>
+                            <a *ngIf="product.preventive" [routerLink]="['/dashboard/preventivo', product.preventive]">
+                                {{product.description}}
+                            </a>
+                            <a *ngIf="product.corrective" [routerLink]="['/dashboard/correctivo', product.corrective]">
+                                {{product.description}}
+                            </a>
+                        </td>
+                        <td class="fw-bold">{{product.qty}}</td>
+                        <td>{{product.cajero.name}}</td>
+                        <td>{{product.fecha | date: 'short'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- HISTORIAL ITEMS -->
+
+<!-- PREVENTIVOS Y CORRECTIVOS DEL PRODUCTO -->
+<div class="d-flex flex-row flex-wrap">
+
+    <!-- PREVENTIVE -->
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick"></span>Preventivos {{ estadoP.value }}s </h4>
+                    </div>
+                    <div class="ml-auto">
+                        <select class="custom-select b-0" (change)="estadoPreventive = estadoP.value; loadPreventives()" #estadoP>
+                            <option value="Pendiente" selected>Pendientes</option>
+                            <option value="Terminado">Terminados</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive m-t-20">
+                    <table class="table vm no-th-brd no-wrap pro-of-month">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tecnico</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="preventives.length === 0">
+                                <td colspan="3" class="text-break">
+                                    <h4 class="mb-0  text-muted">Sin preventivos {{ estadoP.value }}s...</h4>
+                                </td>
+                            </tr>
+
+                            <tr *ngFor="let preventive of preventives">
+                                <td>
+                                    <a [routerLink]="['/dashboard/preventivo', preventive.preid]">
+                                        {{ preventive.control }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <h6> {{ preventive.staff.name }} </h6>
+                                    <small class="text-muted"> {{ preventive.date | date: 'MMMM d y hh:mm a' }} </small>
+                                </td>
+                                <td>
+                                    <span class="label label-rounded" [ngClass]="{'label-success': preventive.estado === 'Terminado', 'label-warning': preventive.estado === 'Pendiente'}"> {{ preventive.estado }} </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- PREVENTIVE -->
+
+    <!-- CORRECTIVE -->
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick bg-danger"></span>Correctivos {{ estadoC.value }}s </h4>
+                    </div>
+                    <div class="ml-auto">
+                        <select class="custom-select b-0" (change)="estadoCorrective = estadoC.value; loadCorrectives()" #estadoC>
+                            <option value="Pendiente" selected>Pendientes</option>
+                            <option value="Terminado">Terminados</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive m-t-20">
+                    <table class="table vm no-th-brd no-wrap pro-of-month">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tecnico</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="correctives.length === 0">
+                                <td colspan="3" class="text-break">
+                                    <h4 class="mb-0  text-muted">Sin correctivos {{ estadoC.value }}s...</h4>
+                                </td>
+                            </tr>
+
+                            <tr *ngFor="let corrective of correctives">
+                                <td>
+                                    <a [routerLink]="['/dashboard/correctivo', corrective.coid]">
+                                        {{ corrective.control }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <h6> {{ corrective.staff.name }} </h6>
+                                    <small class="text-muted"> {{ corrective.date | date: 'MMMM d y hh:mm a' }} </small>
+                                </td>
+                                <td>
+                                    <span class="label label-rounded" [ngClass]="{'label-success': corrective.estado === 'Terminado', 'label-warning': corrective.estado === 'Pendiente'}"> {{ corrective.estado }} </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- CORRECTIVE -->
+</div>
+<!-- PREVENTIVOS Y CORRECTIVOS DEL PRODUCTO -->
+
+
+<!-- ASIGNAR CLIENTE -->
+<app-createpreventives *ngIf="product" [inProduct]="product"></app-createpreventives>
+<app-createcorrectives *ngIf="product" [inProduct]="product"></app-createcorrectives>
+<app-assign-client [productC]="product" (actualizar)="loadProduct()"></app-assign-client>

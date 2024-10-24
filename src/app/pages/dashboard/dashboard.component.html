@@ -1,0 +1,292 @@
+<!-- ============================================================== -->
+<!-- Stats box -->
+<!-- ============================================================== -->
+<div *ngIf="user.role === 'ADMIN'" class="row">
+
+    <div class="col-lg-3">
+        <app-cards [coleccion]="'clientes'"></app-cards>
+    </div>
+
+    <div class="col-lg-3">
+        <app-cards [coleccion]="'usuarios'"></app-cards>
+    </div>
+
+    <div class="col-lg-3">
+        <app-cards [coleccion]="'preventivos'"></app-cards>
+    </div>
+
+    <div class="col-lg-3">
+        <app-cards [coleccion]="'correctivos'"></app-cards>
+    </div>
+
+</div>
+<!-- ============================================================== -->
+<!-- Sales overview chart -->
+<!-- ============================================================== -->
+
+<div class="d-flex flex-wrap">
+
+    <div class="col-md-6">
+        <!-- ============================================================== -->
+        <!-- PROXIMOS PREVENTIVOS -->
+        <!-- ============================================================== -->
+
+        <div *ngIf="user.role === 'ADMIN'" class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <h4 class="card-title"><span class="lstick bg-warning"></span>Proximos Mantenimientos Preventivos</h4>
+                    <div class="ml-auto">
+                        <span class="badge badge-warning fs-5"> {{ totalProximos | number }} </span>
+                    </div>
+                </div>
+            </div>
+            <div class="activity-box">
+                <div class="card-body">
+                    <!-- Activity item-->
+                    <div class="text-center" *ngIf="products.length === 0">
+
+                        <h3 class="mb-0 text-muted tex-break text-center"> No existen registros de proximos mantenimientos preventivos en los proximos 7 dias... </h3>
+                        <a routerLink="/dashboard/preventivos">Ir a preventivos</a>
+
+                    </div>
+
+                    <ng-container *ngIf="products.length > 0">
+
+                        <div class="activity-item" *ngFor="let product of products">
+                            <div class="round m-r-20">
+                                <img [src]=" product.img! | imagen: 'products' " alt="user" width="50">
+                            </div>
+                            <div class="m-t-10">
+
+                                <h5 class="m-b-0 font-medium"> <a [routerLink]="['/dashboard/producto', product.pid]"> {{ product.code }} </a>
+                                    <span class="text-muted font-14 m-l-10">| &nbsp; {{ product.next | date:'MMMM d y' }} </span></h5>
+                                <h6 class="text-muted"> {{ product.client?.name }} </h6>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <!-- Activity item-->
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- PREVENTIVOS -->
+        <!-- ============================================================== -->
+        <div class="card">
+
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick"></span>Preventivos {{ selectEstado.value }}s {{total}}</h4>
+                    </div>
+                    <div class="ml-auto">
+                        <select (change)=" estado = selectEstado.value ; loadPreventives() " class="custom-select b-0" #selectEstado>
+                        <option value="Pendiente" selected>Pendientes</option>
+                        <option value="Terminado">Terminados</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="table-responsive m-t-20">
+                    <table class="table vm no-th-brd no-wrap pro-of-month">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th colspan="2">Creado por</th>
+                                <th>Cliente</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="preventives.length === 0">
+                                <td colspan="5">
+                                    <h4 class="mb-0 text-muted text-center"> No tiene ningun preventivo {{ selectEstado.value }} ...</h4>
+                                </td>
+                            </tr>
+
+                            <tr *ngFor="let preventive of preventives">
+                                <td>
+                                    <a [routerLink]="['/dashboard/preventivo', preventive.preid]" class="fw-bold">
+                                    {{ preventive.control }}
+                                </a>
+                                </td>
+                                <td style="width:50px;">
+                                    <span class="round">
+                                    <img [src]=" preventive.create.img | imagen:'user' " alt="user" width="50">
+                                </span>
+                                </td>
+                                <td>
+                                    <h6> {{ preventive.create.name }} </h6>
+                                    <small class="text-muted"> {{ preventive.date | date: 'MMMM d Y h:MM:ss a' }}</small>
+                                </td>
+                                <td>
+                                    <h6> {{ preventive.client.name }} </h6>
+                                    <small class="text-muted"> {{ preventive.product.serial }} </small>
+                                </td>
+                                <td>
+                                    <span class="label label-rounded" [ngClass]="{'label-warning': preventive.estado === 'Pendiente', 'label-success': preventive.estado === 'Terminado'}"> {{ preventive.estado}} </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <!-- ============================================================== -->
+        <!-- PREVENTIVOS -->
+        <!-- ============================================================== -->
+
+        <!-- ============================================================== -->
+        <!--  CORRECTIVOS -->
+        <!-- ============================================================== -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick bg-danger"></span>Correctivos {{ selectEstadoCorrect.value }}s {{totalCorrectives}}</h4>
+                    </div>
+                    <div class="ml-auto">
+                        <select (change)=" estadoCorrective = selectEstadoCorrect.value ; loadCorrectives() " class="custom-select b-0" #selectEstadoCorrect>
+                        <option value="Pendiente" selected>Pendientes</option>
+                        <option value="Terminado">Terminados</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="table-responsive m-t-20">
+                    <table class="table vm no-th-brd no-wrap pro-of-month">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th colspan="2">Creado por</th>
+                                <th>Cliente</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="correctives.length === 0">
+                                <td colspan="5">
+                                    <h4 class="mb-0 text-muted text-center"> No tiene ningun correctivo {{ selectEstadoCorrect.value }} ...</h4>
+                                </td>
+                            </tr>
+
+                            <tr *ngFor="let corrective of correctives">
+                                <td>
+                                    <a [routerLink]="['/dashboard/correctivo', corrective.coid]" class="fw-bold">
+                                    {{ corrective.control }}
+                                </a>
+                                </td>
+                                <td style="width:50px;">
+                                    <span class="round">
+                                    <img [src]=" corrective.create.img | imagen:'user' " alt="user" width="50">
+                                </span>
+                                </td>
+                                <td>
+                                    <h6> {{ corrective.create.name }} </h6>
+                                    <small class="text-muted"> {{ corrective.date | date: 'MMMM d Y h:MM:ss a' }}</small>
+                                </td>
+                                <td>
+                                    <h6> {{ corrective.client.name }} </h6>
+                                    <small class="text-muted"> {{ corrective.product.serial }} </small>
+                                </td>
+                                <td>
+                                    <span class="label label-rounded" [ngClass]="{'label-warning': corrective.estado === 'Pendiente', 'label-success': corrective.estado === 'Terminado'}"> {{ corrective.estado}} </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- CORRECTIVOS -->
+        <!-- ============================================================== -->
+
+    </div>
+
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h4 class="card-title"><span class="lstick"></span>Tareas</h4>
+                    <div class="form-group">
+                        <select class="form-control" (change)="changeEnd(selectEnd.value)" #selectEnd>
+                            <option value="pendiente" selected>Pendientes</option>
+                            <option value="finalizado">Finalizados</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Comment widgets -->
+            <!-- ============================================================== -->
+            <div style="max-height: 800px; overflow-y: auto;">
+
+                <div class="comment-widgets">
+                    <!-- Comment Row -->
+
+                    <div class="container">
+                        <h4 *ngIf="tasks.length === 0">Vacia la lista de tareas...</h4>
+                    </div>
+
+                    <div class="d-flex flex-row comment-row mb-1" *ngFor="let tarea of tasks; let i = index">
+
+                        <div class="p-2" *ngIf="user.role === 'ADMIN'">
+                            <button (click)="delTask(tarea.taskid!)" type="button" class="btn btn-circle btn-danger">
+                            <i class="ti-trash"></i>
+                        </button>
+                        </div>
+
+                        <div class="comment-text w-100">
+
+                            <div class="d-flex justify-content-between">
+                                <!-- CREADO POR -->
+                                <h4 class="fw-bold"> {{ tarea.create.name }} </h4>
+
+                                <!-- ESTADO -->
+                                <div class="form-check form-switch">
+                                    <input (click)="confirmTask(tarea)"  [checked]="tarea.end || false" class="form-check-input" type="checkbox" role="switch" [id]="'redImp'+i">
+                                    <label class="form-check-label" [for]="'redImp'+i"></label>
+                                </div>
+
+                            </div>
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"> <span class="fw-bold">Usuario:</span> {{ tarea.staff.name }}</li>
+                                <li class="list-group-item"> <span class="fw-bold">Para:</span> {{ tarea.para }}</li>
+                                <li class="list-group-item"> <span class="fw-bold text-break">Dirección:</span> {{ tarea.address }}</li>
+                            </ul>
+
+                            <p class="my-2 m-b-5 text-break"> {{tarea.description}} </p>
+
+                            <div class="comment-footer ">
+                                <span class="text-muted pull-right"> {{ tarea.fecha | date:'dd/M/y' }} <span *ngIf="tarea.fechaend">- {{tarea.fechaend | date:'short' }}</span> </span>
+
+                                <button (click)="finTask(tarea)" type="button" [disabled]="tarea.status && user.role !== 'ADMIN'" class="btn btn-sm" [ngClass]="{'btn-success': tarea.status, 'btn-dark': !tarea.status}">
+                                <span *ngIf="!tarea.status">Ejecutar</span>
+                                <span *ngIf="tarea.status">Ejecutada</span>
+                            </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-4 d-flex justify-content-between">
+                <div>
+                    <p class="mb-0">Total: {{totalTask}}</p>
+                </div>
+                <div class="btn-group" role="group" aria-label="First group">
+                    <button [disabled]="query.desde === 0" (click)="cambiarPagina( (query.hasta * -1) )" type="button" class="btn btn-dark text-white">Atras</button>
+                    <button [disabled]="( query.desde + query.hasta ) >= totalTask" (click)="cambiarPagina(query.hasta)" type="button" class="btn btn-dark text-white">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

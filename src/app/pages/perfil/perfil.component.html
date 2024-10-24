@@ -1,0 +1,237 @@
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row">
+    <!-- Column -->
+    <div class="col-lg-4 col-xlg-3 col-md-5">
+        <div class="card">
+            <div class="card-body">
+                <div class="m-t-30 text-center">
+                    <img src="../assets/images/users/5.jpg" class="img-circle" width="150" />
+                    <h4 class="card-title m-t-10"> {{ user.name }} </h4>
+                    <h6 class="card-subtitle"> {{ user.role }} </h6>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Column -->
+    <!-- Column -->
+    <div class="col-lg-8 col-xlg-9 col-md-7">
+        <div class="card">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs profile-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#preventives" role="tab">Preventivos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#correctives" role="tab">Correctivos</a>
+                </li>
+                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings" role="tab">Settings</a> </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+
+                <!-- =================================
+                    PREVENTIVES
+                ================================== -->
+                <div class="tab-pane active" id="preventives" role="tabpanel">
+
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h4 class="card-title"><span class="lstick"></span>Preventivos {{ selectEstado.value }}s {{total}}</h4>
+                            </div>
+                            <div class="ml-auto">
+                                <select (change)=" estado = selectEstado.value ; loadPreventives() " class="custom-select b-0" #selectEstado>
+                                    <option value="Pendiente" selected>Pendientes</option>
+                                    <option value="Terminado">Terminados</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive m-t-20">
+                            <table class="table vm no-th-brd no-wrap pro-of-month">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th colspan="2">Creado por</th>
+                                        <th>Cliente</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr *ngIf="preventives.length === 0">
+                                        <td colspan="5">
+                                            <h4 class="mb-0 text-muted text-center"> No tiene ningun preventivo {{ selectEstado.value }} ...</h4>
+                                        </td>
+                                    </tr>
+
+                                    <tr *ngFor="let preventive of preventives">
+                                        <td>
+                                            <a [routerLink]="['/dashboard/preventivo', preventive.preid]" class="fw-bold">
+                                                {{ preventive.control }}
+                                            </a>
+                                        </td>
+                                        <td style="width:50px;">
+                                            <span class="round">
+                                                <img [src]=" preventive.create.img | imagen:'user' " alt="user" width="50">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <h6> {{ preventive.create.name }} </h6>
+                                            <small class="text-muted"> {{ preventive.date | date: 'MMMM d Y h:MM:ss a' }}</small>
+                                        </td>
+                                        <td>
+                                            <h6> {{ preventive.client.name }} </h6>
+                                            <small class="text-muted"> {{ preventive.product.serial }} </small>
+                                        </td>
+                                        <td>
+                                            <span *ngIf="!preventive.status" class="label label-danger"> Eliminado </span>
+                                            <span *ngIf="preventive.status && preventive.estado == 'Pendiente'" class="label label-warning"> {{ preventive.estado }} </span>
+                                            <span *ngIf="preventive.status && preventive.estado == 'Terminado'" class="label label-success"> {{ preventive.estado }} </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- =================================
+                    PREVENTIVES
+                ================================== -->
+
+                <!-- =================================
+                    CORRECTIVES
+                ================================== -->
+                <div class="tab-pane" id="correctives" role="tabpanel">
+
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div>
+                                <h4 class="card-title"><span class="lstick bg-danger"></span>Correctivos {{ selectEstadoCorrect.value }}s {{totalCorrectives}}</h4>
+                            </div>
+                            <div class="ml-auto">
+                                <select (change)=" estadoCorrective = selectEstadoCorrect.value ; loadCorrectives() " class="custom-select b-0" #selectEstadoCorrect>
+                                    <option value="Pendiente" selected>Pendientes</option>
+                                    <option value="Terminado">Terminados</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive m-t-20">
+                            <table class="table vm no-th-brd no-wrap pro-of-month">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th colspan="2">Creado por</th>
+                                        <th>Cliente</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr *ngIf="correctives.length === 0">
+                                        <td colspan="5">
+                                            <h4 class="mb-0 text-muted text-center"> No tiene ningun correctivo {{ selectEstadoCorrect.value }} ...</h4>
+                                        </td>
+                                    </tr>
+
+                                    <tr *ngFor="let corrective of correctives">
+                                        <td>
+                                            <a [routerLink]="['/dashboard/correctivo', corrective.coid]" class="fw-bold">
+                                                {{ corrective.control }}
+                                            </a>
+                                        </td>
+                                        <td style="width:50px;">
+                                            <span class="round">
+                                                <img [src]=" corrective.create.img | imagen:'user' " alt="user" width="50">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <h6> {{ corrective.create.name }} </h6>
+                                            <small class="text-muted"> {{ corrective.date | date: 'MMMM d Y h:MM:ss a' }}</small>
+                                        </td>
+                                        <td>
+                                            <h6> {{ corrective.client.name }} </h6>
+                                            <small class="text-muted"> {{ corrective.product.serial }} </small>
+                                        </td>
+                                        <td>
+                                            <span *ngIf="!corrective.status" class="label label-danger"> Eliminado </span>
+                                            <span *ngIf="corrective.status && corrective.estado == 'Pendiente'" class="label label-warning"> {{ corrective.estado }} </span>
+                                            <span *ngIf="corrective.status && corrective.estado == 'Terminado'" class="label label-success"> {{ corrective.estado }} </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =================================
+                    CORRECTIVES
+                ================================== -->
+
+                <!-- =================================
+                    PERFIL
+                ================================== -->
+                <div class="tab-pane" id="settings" role="tabpanel">
+                    <div class="card-body">
+                        <form class="form-horizontal form-material" [formGroup]="formUpdate" (ngSubmit)="updateUser()">
+
+                            <div class="form-group" [ngClass]="{'has-danger': validateEditForm('usuario')}">
+                                <label class="col-md-12"> Usuario </label>
+                                <div class="col-md-12">
+                                    <input formControlName="usuario" type="text" placeholder="Johnathan Doe" class="form-control " [ngClass]="{'form-control-danger': validateEditForm('usuario')}">
+                                    <small *ngIf="validateEditForm('usuario')" class="form-control-feedback animated fadeIn">Este campo es obligatorio</small>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group" [ngClass]="{'has-danger': validateEditForm('name')}">
+                                <label class="col-md-12"> Nombres </label>
+                                <div class="col-md-12">
+                                    <input formControlName="name" type="text" placeholder="Johnathan Doe" class="form-control form-control-line" [ngClass]="{'form-control-danger': validateEditForm('name')}">
+                                    <small *ngIf="validateEditForm('name')" class="form-control-feedback animated fadeIn">Este campo es obligatorio</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-12">Password</label>
+                                <div class="col-md-12">
+                                    <input formControlName="password" type="password" value="password" class="form-control form-control-line" [ngClass]="{'form-control-danger': validateEditForm('password')}">
+                                    <small *ngIf="validateEditForm('password')" class="form-control-feedback animated fadeIn">Este campo es obligatorio</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-12">Re-password</label>
+                                <div class="col-md-12">
+                                    <input formControlName="repassword" type="password" value="password" class="form-control form-control-line" [ngClass]="{'form-control-danger': validateEditForm('repassword')}">
+                                    <small *ngIf="validateEditForm('repassword')" class="form-control-feedback animated fadeIn">Este campo es obligatorio</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <button type="submit" class="btn btn-success">Actualizar perfil</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- =================================
+                    PERFIL
+                ================================== -->
+
+
+
+            </div>
+        </div>
+    </div>
+    <!-- Column -->
+</div>
+<!-- Row -->
+<!-- ============================================================== -->
+<!-- End PAge Content -->
+<!-- ============================================================== -->

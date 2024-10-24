@@ -1,0 +1,105 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Lista de Abonados</h4>
+                <h6 class="card-subtitle"></h6>
+                <div class="table-responsive">
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list" data-page-size="10">
+                        <thead>
+
+                            <!-- usuario name role address img valid status fecha -->
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngFor="let abonado of abonados">
+                                <td>
+                                    <a [routerLink]="['/dashboard/abonado', abonado.aid]">
+                                        {{ abonado.name }} 
+                                    </a>
+                                </td>
+                                <td> {{ abonado.usuario }} </td>
+                                <td><span class="label label-success">Activo</span></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Delete"><i class="ti-close" aria-hidden="true"></i></button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2">
+                                    <button type="button" class="btn btn-info btn-rounded" data-toggle="modal" data-target="#add-user">Agregar Abonados</button>
+                                </td>
+
+                                <td colspan="7">
+                                    <div class="text-right">
+                                        <ul class="pagination"> </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================= 
+MODAL AGREGAR ABONADO
+======================================================== -->
+<div id="add-user" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" #modalNewUser>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Nuevo Abonado</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal form-material" autocomplete="off" [formGroup]="formNewUser" (ngSubmit)="createUser()">
+
+                    <div class="form-group has-danger">
+
+                        <div class="col-md-12 m-b-20">
+                            <input formControlName="name" type="text" class="form-control" placeholder="Nombres">
+                            <div *ngIf="validate('name')" class="form-control-feedback">
+                                <small> Los nombres son obligatorios </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 m-b-20">
+                            <input formControlName="usuario" type="text" class="form-control" placeholder="Usuario">
+                            <div *ngIf="validate('usuario')" class="form-control-feedback">
+                                <small> El usuario es obligatorio </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 m-b-20">
+                            <input formControlName="password" type="password" class="form-control" placeholder="Password">
+                            <div *ngIf="validate('password')" class="form-control-feedback">
+                                <small> El password es obligatorio </small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-info waves-effect btn-block">Guardar</button>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

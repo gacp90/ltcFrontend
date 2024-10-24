@@ -1,0 +1,102 @@
+<!-- ========================================================= 
+MODAL ADD CLIENT
+======================================================== -->
+<div id="client-product" class="modal fade in">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Asignar cliente</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="my-2">
+
+                    <input type="text" autocomplete="off" id="demo-input-search3" placeholder="Buscar Cliente" (keyup)="searchClients(buscadorC.value)" class="form-control m-0" #buscadorC>
+                    <small *ngIf="resultadoC > 0" class="text-muted animated fadeIn">Resultados: {{resultadoC}}</small>
+                    <small *ngIf="sinResultadoC" class="text-muted animated fadeIn">Sin resultados...</small>
+
+                    <div *ngIf="clients.length > 0" class="list-group list-group-flush" style="max-height:400px; overflow-y: scroll; z-index: 500; position: fixed;">
+
+                        <ng-container *ngFor="let client of clients">
+                            <button type="button" class="list-group-item list-group-item-action pointer animated fadeIn" (click)="assignClient(client, 'Instalada')" data-dismiss="modal">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1 text-break fw-bolder">{{ client.name }}</h5>
+                                    <small> 
+                                        <span *ngIf="client.status" class="label label-success"> Activo </span>
+                                        <span *ngIf="!client.status" class="label label-danger"> Desactivado </span>
+                                    </small>
+                                </div>
+                                <p class="mb-1" *ngIf="client.phone" > <i class="mdi mdi-cellphone-iphone"></i> {{ client.phone }} </p>
+                                <small *ngIf="client.address" class="text-break"> 
+                                    <span *ngIf="client.city" > <i class="mdi mdi-map-marker"></i> {{ client.city }} - </span> {{ client.address }} 
+                                </small>                          
+                                
+                            </button>
+                        </ng-container>
+
+                    </div>
+
+                </div>
+
+                <div class="form-inline gap-2">
+                    <div class="form-group mb-2">
+                        <label for="ubicacion" class="sr-only">Ubicación</label>
+                        <input type="text" class="form-control" id="ubicacion" placeholder="Ubicación" #ubicacion>
+                    </div>
+                    <button (click)="updateUbicacion(ubicacion.value)" type="button" class="btn btn-primary mb-2">Actualizar</button>
+                </div>
+
+                <div class="container">
+
+                    <p class="mb-0 text-muted mt-3">
+                        Información del producto
+                    </p>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+
+                        <div class="card w-50 shadow mx-auto">
+                            <img class="card-img img-fluid" [src]="productC?.img! | imagen:'products' " alt="Card image">
+                        </div>
+
+                        <div class="container text-break">
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <span style="font-size: 1rem;">
+                                        <small *ngIf="productC?.status" class="label label-success label-rounded"> Activo </small>
+                                        <small *ngIf="!productC?.status" class="label label-danger label-rounded"> Desactiv </small>
+                                    </span>
+                                    <br>
+                                    <span class="font-weight-bold">Codigo: </span>{{ productC?.code }}
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="font-weight-bold"> Serial: </span>{{ productC?.serial }}
+                                </li>
+                                <li *ngIf="productC?.client" class="list-group-item">
+                                    <span class="font-weight-bold"> Cliente: </span> {{ productC?.client.name }}
+                                </li>
+                                <li *ngIf="productC?.ubicacion" class="list-group-item">
+                                    <span class="font-weight-bold"> Ubicación: </span> {{ productC?.ubicacion }}
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ========================================================= 
+MODAL ADD CLIENT
+======================================================== -->

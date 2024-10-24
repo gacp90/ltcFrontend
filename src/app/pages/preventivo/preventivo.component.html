@@ -1,0 +1,572 @@
+<!-- CHECKIN - CHECKOUT -->
+<div class="d-flex align-item-center flex-wrap gap-2 mb-3 w-md-50">
+
+    <button (click)="updateCheck('checkin')" [disabled]="preventive?.checkin" type="button " class="card mt-2 mb-0 bg-success p-3 text-white pointer">
+        <div class="">
+            <h4 class="mb-0 text-white fw-bold text-left "> 
+                <i class="mdi mdi-airplane-landing"></i>
+                CheckIn 
+            </h4>
+            <footer>
+                <small *ngIf="preventive?.checkin">
+                    {{ preventive?.checkin | date: 'medium' }}
+                </small>
+                <small *ngIf="!preventive?.checkin">
+                    click aqui para checkIn
+                </small>
+            </footer>
+        </div>
+    </button>
+
+    <button (click)="updateCheck('checkout')" [disabled]="preventive?.checkout" *ngIf="preventive?.checkin" type="button " class="card mt-2 mb-0 bg-danger p-3 text-white pointer">
+        <div class="">
+            <h4 class="mb-0 text-white fw-bold text-left">
+                <i class="mdi mdi-airplane-takeoff"></i>
+                CheckOut 
+            </h4>
+            <footer>
+                <small *ngIf="preventive?.checkout">
+                    {{ preventive?.checkout | date: 'medium' }}
+                </small>
+                <small *ngIf="!preventive?.checkout">
+                    click aqui para checkOut
+                </small>
+            </footer>
+        </div>
+    </button>
+
+    <button *ngIf="user.role === 'ADMIN'" (click)="updateEstado(preventive?.estado!)" type="button " class="card mt-2 mb-0 p-3 text-white pointer" [ngClass]="{'bg-dark': preventive?.estado! === 'Terminado', 'bg-warning': preventive?.estado! === 'Pendiente'}">
+        <div class="">
+            <h4 class="mb-0 text-white fw-bold text-left">
+                <span *ngIf="preventive?.estado == 'Pendiente'"> 
+                    <i class="mdi mdi-check"></i>
+                    Finalizar
+                </span>
+                <span *ngIf="preventive?.estado == 'Terminado'">
+                    <i class="mdi mdi-restart"></i>
+                     Abrir
+                </span>                 
+            </h4>
+            <footer>
+                <small *ngIf="!preventive?.checkout">
+                    <span class="text-break" *ngIf="preventive?.estado == 'Pendiente'">Click aqui para finalizar el mantenimiento</span>
+                    <span class="text-break" *ngIf="preventive?.estado == 'Terminado'">Click aqui para volver a abrir el mantenimiento</span>       
+                </small>
+            </footer>
+        </div>
+    </button>
+
+</div>
+<!-- CHECKIN - CHECKOUT -->
+<hr>
+<!-- CONTROL - CLIENT -->
+
+<!-- STATUS -->
+<div *ngIf="!preventive?.status" class="alert alert-danger">
+    <h4 class="mb-0 text-danger">Este mantenimiento fue eliminado</h4>
+</div>
+
+<div class="d-flex align-item-center flex-wrap gap-2 mb-3">
+
+    <!-- CONTROL -->
+    <div class="d-flex flex-row bg-white pl-0 pr-3 shadow-sm mt-2">
+        <div class="p-10 bg-info">
+            <h3 class="text-white box m-b-0 fs-3 fw-bold">
+                {{ preventive?.control | number }}
+            </h3>
+        </div>
+        <div class="align-self-center m-l-20">
+            <h3 class="m-b-0 text-info"> Control </h3>
+            <small *ngIf="preventive?.estado === 'Pendiente' " class="text-warning m-b-0">
+                {{ preventive?.estado }}
+            </small>
+            <small *ngIf="preventive?.estado === 'Terminado' " class="text-success m-b-0">
+                {{ preventive?.estado }}
+            </small>
+        </div>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="d-flex flex-row bg-white pl-0 shadow-sm mt-2">
+        <div class="p-10 bg-primary">
+            <h3 class="text-white box m-b-0">
+                <i class=" mdi mdi-account-outline fs-2"></i>
+            </h3>
+        </div>
+        <div class="align-self-center m-l-20 pr-3">
+            <h4 class="m-b-0 text-primary text-break"> {{preventive?.client.name}} </h4>
+            <small class="text-muted m-b-0">
+                <i class="mdi mdi-phone"></i>
+                {{ preventive?.client.phone }}
+            </small>
+            <small class="text-muted m-b-0">
+                - <i class="mdi mdi-map-marker"></i>
+                {{ preventive?.client.address }}
+            </small>
+
+        </div>
+    </div>
+
+</div>
+<!-- CONTROL - CLIENT -->
+
+<div class="d-flex flex-row flex-wrap gap-2">
+
+    <!-- INFO PRODUCT -->
+    <div class="card w-100">
+        <div class="card-body">
+
+            <div class="d-flex flex-row flex-wrap gap-2 mb-3">
+
+                <div class="col-md-4">
+                    <img [src]="preventive?.product.img | imagen: 'products' " alt="image" class="img-responsive img-rounded" width="150">
+                </div>
+
+                <div>
+                    <p class="mb-2 fw-bolder text-info">PRODUCTO:</p>
+                    <a [routerLink]="['/dashboard/producto/', preventive?.product._id]">
+                        <h3 class="mb-2 fw-bold fs-2">Codigo: {{ preventive?.product.code }} </h3>
+                    </a>
+                    <button type="button" class="btn waves-effect waves-light btn-rounded btn-sm btn-outline-primary">Proximo mantenimiento</button>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-3 col-xs-6 b-r"> <strong class="fw-bold">Serial</strong>
+                    <br>
+                    <p class="text-muted">{{ preventive?.product.serial }}</p>
+                </div>
+
+                <div class="col-md-3 col-xs-6 b-r"> <strong class="fw-bold">Marca</strong>
+                    <br>
+                    <p class="text-muted"> {{ preventive?.product.brand }} </p>
+                </div>
+
+                <div class="col-md-3 col-xs-6 b-r"> <strong class="fw-bold">Modelo</strong>
+                    <br>
+                    <p class="text-muted"> {{ preventive?.product.model }} </p>
+                </div>
+
+                <div class="col-md-3 col-xs-6"> <strong class="fw-bold">Año</strong>
+                    <br>
+                    <p class="text-muted"> {{ preventive?.product.year }} </p>
+                </div>
+            </div>
+
+            <!-- UBICACION -->
+            <div>
+                <strong class="fw-bold">Ubicación</strong>
+                <br>
+                <p class="text-muted"> {{ preventive?.product.ubicacion || 'Aun no se ha asignado una ubicación' }} </p>
+            </div>
+
+        </div>
+    </div>
+    <!-- INFO PRODUCT -->
+
+    <!-- INFO STAFF -->
+    <div class="card ml-auto">
+
+        <div class="card-body little-profile text-center">
+            <div class="pro-img m-t-20"><img class="shadow" [src]="preventive?.staff.img | imagen:'user'" alt="user"></div>
+            <h3 class="m-b-0"> {{ preventive?.staff.name }} </h3>
+            <h6 class="text-muted"> {{ preventive?.staff.role }} </h6>
+        </div>
+
+    </div>
+    <!-- INFO STAFF -->
+
+</div>
+
+<!-- HISTORIAL ITEMS -->
+<div class="card w-100">
+    <div class="card-body">
+        <h4 class="card-title">Historial de repuestos</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="logProducts.length == 0">
+                        <td colspan="8">
+                            <h3 class="mb-0 text-center"> Aun no existen registros de historial de repuesto... <br> <span class="fw-bold">Nota:</span> Esta función es nueva, buscar en los mantenimientos anteriores o en el modulo de movimientos</h3>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let product of logProducts" [ngClass]="{'table-primary': product.corrective === preventive.preid}" >
+
+                        <td>{{product.sku}}</td>
+                        <td>
+                            {{product.name}}
+                        </td>
+                        <td>
+                            <span *ngIf="!product.invoice && !product.preventive && !product.corrective">
+                                {{product.description}}
+                            </span>
+                            <a *ngIf="product.invoice" [routerLink]="['/dashboard/factura', product.invoice]">
+                                {{product.description}}
+                            </a>
+                            <a *ngIf="product.preventive" [routerLink]="['/dashboard/preventivo', product.preventive]">
+                                {{product.description}}
+                            </a>
+                            <a *ngIf="product.corrective" [routerLink]="['/dashboard/correctivo', product.corrective]">
+                                {{product.description}}
+                            </a>
+                        </td>
+                        <td class="fw-bold">{{product.qty}}</td>
+                        <td>{{product.cajero.name}}</td>
+                        <td>{{product.fecha | date: 'short'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- HISTORIAL ITEMS -->
+
+<!-- INFORME Y ITEMS -->
+<div class="d-flex flex-row flex-wrap gap-2">
+    <!-- INFORMACION DEL MANTENIMIENTO -->
+    <div class="mb-3 col-md-6">
+        <div class="card ">
+            <div class="card-body">
+                <h4 class="card-title"><span class="lstick"></span>Informe Tecnico</h4>
+                <a href="https://admin.lineatecnologicadecolombia.com/api/preventives/pdf/{{preventive?.preid!}}" download target="_blank" class="btn btn-sm btn-danger ms-2 ml-2"> PDF</a>
+            </div>
+            <!-- ============================================================== -->
+            <!-- Comment widgets -->
+            <!-- ============================================================== -->
+            <div class="comment-widgets">
+
+                <!-- Comment Row -->
+                <div class="d-flex flex-row comment-row" *ngFor="let nota of preventive?.notes; let i = index">
+                    <div class="p-2">
+                        <span class="round">
+                        <img [src]="nota.staff.img | imagen: 'user'" alt="user" width="50">
+                    </span>
+                    </div>
+                    <div class="comment-text w-100">
+                        <h5 class="fw-bold"> {{ nota.staff.name }} </h5>
+                        <p class="m-b-5 text-break">
+                            {{ nota.note }}
+                        </p>
+                        <div class="comment-footer">
+                            <span class="text-muted pull-right"> {{ nota.date | date:'EEEE d MMMM  y h:mm a' }} </span>
+                            <span class="action-icons active" *ngIf="i > 0">
+                            <a (click)="deleteNote(nota._id!)" class="pointer"><i class="icon-close"></i></a> 
+                        </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Comment Row -->
+
+                <!-- ENVIAR COMENTARIO -->
+                <form autocomplete="off" [formGroup]="formNotes" (ngSubmit)="postNota()">
+                    <div class="card-body b-t">
+                        <div class="row">
+                            <div class="col-8">
+                                <textarea formControlName="note" placeholder="Escribe el informe tecnico" (keyup.enter)="postNota()" class="form-control b-0" #notaI></textarea>
+                                <div *ngIf="validate('note')" class="form-control-feedback animated fadeIn text-danger">
+                                    <small>** Campo de mensaje vacio </small>
+                                </div>
+                            </div>
+                            <div class="col-4 text-right">
+                                <button type="submit" class="btn btn-info btn-circle btn-lg"><i class="fa fa-paper-plane-o"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- ENVIAR COMENTARIO -->
+
+            </div>
+            <!-- INFORMACION DEL MANTENIMIENTO -->
+        </div>
+    </div>
+
+    <!-- ITEMS -->
+    <div class="mb-3 col-md-6">
+        <div class="card col-12">
+            <div class="card-body">
+
+                <h4 class="card-title"><span class="lstick"></span>ITEMS</h4>
+
+                <hr>
+
+                <div>
+
+                    <button #btnAI class="btn btn-primary" type="button" data-toggle="collapse" data-target="#addItemCollapse" aria-expanded="false" aria-controls="addItemCollapse">
+                        Agregar Item
+                      </button>
+
+                    <div class="collapse mt-3" id="addItemCollapse">
+                        <div class="card card-body">
+
+                            <div class="form-group">
+                                <label>Buscar Item</label>
+                                <input type="text" (keyup)="searchItems(searchII.value)" class="form-control" placeholder="Buscar Item" #searchII>
+                                <small *ngIf="items.length > 0" class="text-muted animated fadeIn">Resultados: {{items.length}}</small>
+
+                                <div *ngIf="items.length > 0" class="list-group list-group-flush shadow" style="min-width: 80%; max-height:400px; overflow-y: scroll; position: absolute;">
+
+                                    <ng-container *ngFor="let product of items ">
+                                        <button [disabled]="!product.status || product.inventory <= 0" type="button " class="list-group-item list-group-item-action pointer animated fadeIn fast" (click)="selectItem(product) " data-dismiss="modal ">
+                                                <div class="d-flex w-100 justify-content-between ">
+                                                    <div>
+                                                        <h5 class="mb-1 text-break fw-bolder ">{{ product.sku }}</h5>
+                                                        <small class="mb-1 text-break fw-bolder text-muted">{{ product.name }}</small>
+                                                    </div>
+                                                    <small> 
+                                                        <span *ngIf="product.status " class="label label-success "> Activo </span>
+                                                        <span *ngIf="!product.status " class="label label-danger "> Desactivado </span>
+                                                    </small>
+                                                </div>                                                                                    
+                                            </button>
+                                    </ng-container>
+
+                                </div>
+                            </div>
+
+                            <form class="form-horizontal form-material" [formGroup]="addItemForm" (ngSubmit)="addItem()">
+
+                                <div class="form-group">
+
+                                    <label for="" class="form-label">SKU o Codigo</label>
+                                    <input readonly formControlName="sku" type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" />
+                                    <small id="helpId" *ngIf="validateFormItems('sku')" class="form-text text-danger">Campo obligatorio</small>
+
+
+                                </div>
+                                <div class="form-group">
+
+
+                                    <label for="" class="form-label">Item</label>
+                                    <input readonly formControlName="description" type="text" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" />
+                                    <small id="helpId" *ngIf="validateFormItems('description')" class="form-text text-danger">Campo obligatorio</small>
+
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="" class="form-label">Cantidad</label>
+                                    <input formControlName="qty" min="1" type="number" class="form-control" name="" id="" aria-describedby="helpId" placeholder="" />
+                                    <small id="helpId" *ngIf="validateFormItems('qty')" class="form-text text-danger">Campo obligatorio</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Agregar
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive m-t-20" *ngIf="preventive">
+                    <table class="table vm no-th-brd pro-of-month">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Cantidad</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngIf="preventive.items?.length === 0">
+                                <td colspan="4" class="text-center"> No se han agregado items en este mantenimiento... </td>
+                            </tr>
+
+                            <tr *ngFor="let item of preventive.items; let i = index">
+                                <td> {{ i + 1 }} </td>
+                                <td> {{ item.description }} </td>
+                                <td> {{ item.quantity }} </td>
+                                <td> {{ item.date | date: 'short' }} </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ===============================================================================
+    SUBIR IMAGENES ANTES DEL MANTENIMIENTO
+=============================================================================== -->
+<div class="card mb-3">
+    <div class="card-body">
+        <h4 class="card-title">Subir imagenes antes del mantenimiento!</h4>
+        <label for="input-file-now">Formatos permitidos JPG - JPEG - PNG - WEBP</label>
+        <div class="dropify-wrapper">
+            <div class="dropify-message"><span class="file-icon"></span>
+                <p> Arrastre y suelte o de click aqui </p>
+                <p class="dropify-error">Ooops, something wrong appended.</p>
+            </div>
+            <div class="dropify-loader"></div>
+            <div class="dropify-errors-container">
+                <ul></ul>
+            </div>
+            <input #fileImgBef type="file" id="input-file-now" capture="camera" class="dropify" (change)="cambiarImage($event.target, 'before')">
+            <button type="button" class="dropify-clear">Remove</button>
+            <div class="dropify-preview" [ngClass]="{'d-block': imgTempBef}">
+
+                <span class="dropify-render">
+                    <img *ngIf="imgTempBef" [src]="imgTempBef" alt="">
+                </span>
+
+                <div class="dropify-infos">
+                    <div class="dropify-infos-inner">
+                        <p class="dropify-filename">
+                            <span class="file-icon"></span>
+                            <span class="dropify-filename-inner"></span></p>
+                        <p class="dropify-infos-message">Arrastre y suelte ó Seleccione una Imagen</p>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <button (click)="subirImg('imgBef')" [disabled]="imgTempBef === null" type="button" class="mt-3 btn waves-effect waves-light btn-rounded btn-info">Subir imagens</button>
+
+    </div>
+</div>
+<!-- SUBIR IMAGENES -->
+
+<div *ngIf="imgsbefore" class="card rojito">
+    <div class="card-body">
+        <h3 class="card-title"> Imagenes antes del mantenimiento </h3>
+
+        <swiper [config]="config">
+            <ng-template swiperSlide *ngFor="let item of preventive?.imgBef">
+                <!-- <div class="card">
+                    <img class="card-img img-fluid" [src]="item.img | imagen:'preventives' " alt="Card image">
+                </div> -->
+
+                <div class="card">
+                    <img class="card-img-top img-responsive" [src]="item.img | imagen:'preventives' " alt="Card image cap">
+                    <div class="card-body">
+                        <p class="mb-0">fecha: {{ item.date | date: 'MMMM d y hh:mm:ss a' }}</p>
+                        <ul class="list-inline font-14">
+
+                            <li>
+                                <a [href]="item.img | imagen:'preventives'" class="link" target="_blank">
+                                    <i class="mdi mdi-download"></i> Descargar
+                                </a>
+                            </li>
+                            <li class="p-l-0">
+                                <button (click)="deleteImg( item.img,'imgBef', 'preventives')" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Eliminar">
+                                    <i class="ti-close" aria-hidden="true"></i> Eliminar
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </ng-template>
+        </swiper>
+
+
+    </div>
+</div>
+<!-- ===============================================================================
+    SUBIR IMAGENES ANTES DEL MANTENIMIENTO
+=============================================================================== -->
+
+<!-- ===============================================================================
+    SUBIR IMAGENES DESPUES DEL MANTENIMIENTO
+=============================================================================== -->
+<div class="card mb-3">
+    <div class="card-body">
+        <h4 class="card-title">Subir imagenes despues del mantenimiento</h4>
+        <label for="input-file-now">Formatos permitidos JPG - JPEG - PNG - WEBP</label>
+        <div class="dropify-wrapper">
+            <div class="dropify-message"><span class="file-icon"></span>
+                <p> Arrastre y suelte o de click aqui </p>
+                <p class="dropify-error">Ooops, something wrong appended.</p>
+            </div>
+            <div class="dropify-loader"></div>
+            <div class="dropify-errors-container">
+                <ul></ul>
+            </div>
+            <input #fileImgAft type="file" id="input-file-now" class="dropify" (change)="cambiarImage($event.target, 'after')">
+            <button type="button" class="dropify-clear">Remove</button>
+            <div class="dropify-preview" [ngClass]="{'d-block': imgTempAft}">
+
+                <span class="dropify-render">
+                    <img *ngIf="imgTempAft" [src]="imgTempAft" alt="">
+                </span>
+
+                <div class="dropify-infos">
+                    <div class="dropify-infos-inner">
+                        <p class="dropify-filename">
+                            <span class="file-icon"></span>
+                            <span class="dropify-filename-inner"></span></p>
+                        <p class="dropify-infos-message">Arrastre y suelte ó Seleccione una Imagen</p>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <button (click)="subirImg('imgAft')" [disabled]="imgTempAft === null" type="button" class="mt-3 btn waves-effect waves-light btn-rounded btn-info">Subir imagens</button>
+
+    </div>
+</div>
+<!-- SUBIR IMAGENES -->
+
+<div *ngIf="imgsafter" class="card rojito">
+    <div class="card-body">
+        <h3 class="card-title"> Imagenes despues del mantenimiento </h3>
+
+        <swiper [config]="config">
+            <ng-template swiperSlide *ngFor="let item of preventive?.imgAft">
+                <!-- <div class="card">
+                    <img class="card-img img-fluid" [src]="item.img | imagen:'preventives' " alt="Card image">
+                </div> -->
+
+                <div class="card">
+                    <img class="card-img-top img-responsive" [src]="item.img | imagen:'preventives' " alt="Card image cap">
+                    <div class="card-body">
+                        <p class="mb-0">fecha: {{ item.date | date: 'MMMM d y hh:mm:ss a' }}</p>
+                        <ul class="list-inline font-14">
+
+                            <li>
+                                <a [href]="item.img | imagen:'preventives'" class="link" target="_blank">
+                                    <i class="mdi mdi-download"></i> Descargar
+                                </a>
+                            </li>
+                            <li class="p-l-0">
+                                <button (click)="deleteImg(  item.img,'imgAft', 'preventives')" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Eliminar">
+                                    <i class="ti-close" aria-hidden="true"></i> Eliminar
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </ng-template>
+        </swiper>
+
+
+    </div>
+</div>
+
+<!-- ===============================================================================
+    SUBIR IMAGENES DESPUES DEL MANTENIMIENTO
+=============================================================================== -->

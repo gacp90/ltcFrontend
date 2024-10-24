@@ -1,0 +1,157 @@
+<!-- ============================================================== -->
+<!-- NEW PREVENTIVE MODAL -->
+<!-- ============================================================== -->
+<div id="new-preventivo" class="modal fade in">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Crear Mantenimiento Preventivo</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- SELECCIONAR PRODUCTOS -->
+                <div class="pl-0 mb-3 d-flex align-items-center flex-wrap shadow-sm bg-dark text-white">
+                    <div class="py-2 px-4 bg-info text-white">1</div>
+                    <p class="mb-0 pl-2">Seleccionar un producto</p>
+                </div>
+
+                <div>
+                    <input type="text" autocomplete="off" id="demo-input-search3" placeholder="Buscar Productos" (keyup)="searchProducts(buscadorP.value)" class="form-control m-0" #buscadorP>
+                    <small *ngIf="resProductos > 0" class="text-muted animated fadeIn">Resultados: {{resProductos}}</small>
+                    <small *ngIf="sinResultadoP" class="text-muted animated fadeIn">Sin resultados...</small>
+
+
+                    <div *ngIf="products.length > 0" class="list-group list-group-flush shadow" style="min-width: 80%; max-height:400px; overflow-y: scroll; z-index: 500; position: fixed; ">
+
+                        <ng-container *ngFor="let product of products ">
+                            <button type="button " class="list-group-item list-group-item-action pointer animated fadeIn fast" (click)="selectProduct(product) " data-dismiss="modal ">
+                                    <div class="d-flex w-100 justify-content-between ">
+                                        <div>
+                                            <h5 class="mb-1 text-break fw-bolder ">{{ product.code }}</h5>
+                                            <small class="mb-1 text-break fw-bolder text-muted">{{ product.serial }}</small>
+                                        </div>
+                                        <small> 
+                                            <span *ngIf="product.status " class="label label-success "> Activo </span>
+                                            <span *ngIf="!product.status " class="label label-danger "> Desactivado </span>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1 " *ngIf="product?.model" > <i class="mdi mdi-cards-outline"></i> {{ product?.model }} </p>
+                                    <p class="mb-1 " *ngIf="product?.brand" > <i class="mdi mdi-camera-iris"></i> {{ product?.brand }} </p>
+                                    <p class="mb-1 " *ngIf="product.client?.name " > <i class="mdi mdi-account-outline"></i> {{ product.client?.name }} </p>
+                                    <!-- <small *ngIf="client.address " class="text-break "> 
+                                        <span *ngIf="client.city " > <i class="mdi mdi-map-marker "></i> {{ client.city }} - </span> {{ client.address }} 
+                                    </small>                           -->
+                                    
+                                </button>
+                        </ng-container>
+
+                    </div>
+
+
+                    <!-- PRODUCT SELECT -->
+                    <div *ngIf="productSelect" class="card card-outline-info mt-2 shadow">
+                        <div class="card-header">
+                            <h4 class="m-b-0 text-white">Codigo: {{ productSelect!.code }} </h4>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title mb-0"> <i class="mdi mdi-barcode"></i> {{ productSelect!.serial }}</h3>
+
+                            <ul class="list-group list-group-flush">
+
+                                <li class="list-group-item">
+                                    <span class="font-weight-bold">Modelo:</span> {{ productSelect!.model }}
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="font-weight-bold">Marca:</span> {{ productSelect!.brand }}
+                                </li>
+                                <li *ngIf="productSelect.client && productSelect.cliente" class="list-group-item">
+                                    <span class="font-weight-bold">Cliente: </span> {{ productSelect.client?.name }}
+                                    <button type="button" class="btn btn-success btn-sm border-0" data-toggle="modal" data-target="#client-product">
+                                        <i class="mdi mdi-autorenew"></i>
+                                    </button>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="font-weight-bold">Ubicacion:</span>
+                                    <span [ngClass]="{'text-danger': productSelect!.ubicacion?.length === 0}">
+                                        {{ productSelect!.ubicacion || 'Sin Ubicación' }}
+                                    </span>
+                                </li>
+
+                            </ul>
+
+                            <div *ngIf="!productSelect.client && !productSelect.cliente" class="mt-2 text-break">
+                                <p class="mb-1 text-danger"> <small> ** Debes de seleccionar un cliente para continuar </small> </p>
+                                <button type="button" class="btn btn-inverse" data-toggle="modal" data-target="#client-product">
+                                    Asignar Cliente
+                                </button>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <!-- PRODUCT SELECT -->
+                </div>
+                <!-- SELECCIONAR PRODUCTOS -->
+
+                <!-- SELECCIONAR TECNICOS -->
+                <div *ngIf="selectProd && productSelect.cliente" class="animated fadeIn">
+
+                    <div class="pl-0 mb-3 d-flex align-items-center flex-wrap shadow-sm bg-dark text-white">
+                        <div class="py-2 px-4 bg-info text-white">2</div>
+                        <p class="mb-0 pl-2">Asignar un tecnico</p>
+                    </div>
+
+                    <input type="text" autocomplete="off" id="demo-input-search3" placeholder="Buscar Tecnicos" (keyup)="searchStaffs(buscadorT.value)" class="form-control m-0" #buscadorT>
+                    <small *ngIf="resStaff > 0" class="text-muted animated fadeIn">Resultados: {{resStaff}}</small>
+                    <small *ngIf="sinResultadoS" class="text-muted animated fadeIn">Sin resultados...</small>
+
+
+                    <div *ngIf="staffs.length > 0" class="list-group list-group-flush shadow" style="min-width: 80%; max-height:400px; overflow-y: scroll;">
+
+                        <ng-container *ngFor="let staff of staffs ">
+                            <button type="button " class="list-group-item list-group-item-action pointer animated fadeIn fast" (click)="seleccionarTecnico(staff)">
+                                    <div class="d-flex w-100 justify-content-between ">
+                                        <div>
+                                            <h5 class="mb-1 text-break fw-bolder ">{{ staff.name }}</h5>
+                                        </div>
+                                        <small> 
+                                            <span *ngIf="staff.status " class="label label-success "> Activo </span>
+                                            <span *ngIf="!staff.status " class="label label-danger "> Desactivado </span>
+                                        </small>
+                                    </div>
+                                    
+                                </button>
+                        </ng-container>
+
+                    </div>
+
+
+                    <!-- PRODUCT SELECT -->
+                    <div *ngIf="tecnico" class="card">
+                        <div class="card-body little-profile text-center">
+                            <div class="pro-img m-t-20"><img [src]=" tecnico.img! | imagen: 'user'" alt="user"></div>
+                            <h3 class="m-b-0"> {{ tecnico.name! }} </h3>
+                            <h6 class="text-muted"> {{ tecnico.role! }} </h6>
+                        </div>
+                    </div>
+                    <!-- PRODUCT SELECT -->
+                </div>
+                <!-- SELECCIONAR TECNICOS -->
+
+
+            </div>
+            <div class="modal-footer ">
+                <button *ngIf="selectTech" (click)="createPreventive()" type="button " class="btn btn-info waves-effect " data-dismiss="modal ">Crear</button>
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- ============================================================== -->
+<!-- NEW PREVENTIVE MODAL -->
+<!-- ============================================================== -->
+
+<app-assign-client [productC]="productSelect" (actualizar)="actualizarProduct($event)"></app-assign-client>
