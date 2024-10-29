@@ -191,7 +191,7 @@
 
         </div>
     </div>
-    <!-- INFO PRODUCT -->   
+    <!-- INFO PRODUCT -->
 
     <!-- INFO STAFF -->
     <div class="card ml-auto">
@@ -230,7 +230,7 @@
                             <h3 class="mb-0 text-center"> Aun no existen registros de historial de repuesto... <br> <span class="fw-bold">Nota:</span> Esta función es nueva, buscar en los mantenimientos anteriores o en el modulo de movimientos</h3>
                         </td>
                     </tr>
-                    <tr *ngFor="let product of logProducts" [ngClass]="{'table-primary': product.corrective === corrective.coid}" >
+                    <tr *ngFor="let product of logProducts" [ngClass]="{'table-primary': product.corrective === corrective.coid}">
 
                         <td>{{product.sku}}</td>
                         <td>
@@ -270,7 +270,7 @@
                 <h4 class="card-title"><span class="lstick"></span>Informe Tecnico</h4>
                 <h5 class="card-title" *ngIf="corrective?.recibe"><span class="lstick"></span>Recibe: {{corrective?.recibe || ''}}</h5>
                 <button (click)="recibe()" type="button" class="btn btn-sm btn-primary"> Recibe</button>
-                <a href="https://admin.lineatecnologicadecolombia.com/api/correctives/pdf/{{corrective?.coid!}}" download target="_blank" class="btn btn-sm btn-danger ms-2 ml-2"> PDF</a>
+                <a href="{{local_url}}/api/correctives/pdf/{{corrective?.coid!}}" download target="_blank" class="btn btn-sm btn-danger ms-2 ml-2"> PDF</a>
             </div>
             <!-- ============================================================== -->
             <!-- Comment widgets -->
@@ -406,6 +406,7 @@
                     <table class="table vm no-th-brd pro-of-month">
                         <thead>
                             <tr>
+                                <td></td>
                                 <th>#</th>
                                 <th>Item</th>
                                 <th>Cantidad</th>
@@ -419,6 +420,12 @@
                             </tr>
 
                             <tr *ngFor="let item of corrective.items; let i = index">
+                                <td>
+                                    <button (click)="deleteItem(item)" [disabled]="user.role !== 'ADMIN'" type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn text-danger">
+                                        <span  class="ti-trash"></span>
+                                    </button>
+                                </td>
+
                                 <td> {{ i + 1 }} </td>
                                 <td> {{ item.description }} </td>
                                 <td> {{ item.quantity }} </td>

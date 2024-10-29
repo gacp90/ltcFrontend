@@ -107,5 +107,12 @@ export class PreventivesService {
     return this.http.delete<{ok: boolean, preventive: Preventive}>(`${base_url}/preventives/delete/note/${id}/${note}`, this.headers);
   }
 
+  /** ================================================================
+   *   DELETE NOTE PREVENTIVE
+  ==================================================================== */
+  deleteItemPreventive( id:string, item: any ){
+    return this.http.put<{ok: boolean, preventive: Preventive}>(`${base_url}/preventives/delete/item/${id}`, item, this.headers);
+  }
+
   // FIN DE LA CLASE
 }

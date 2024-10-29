@@ -6,14 +6,14 @@ import { Observable, of } from 'rxjs';
 
 // MODELS
 import { Product } from '../models/products.model';
+import { Inventory } from '../models/inventory.model';
 
 // INTERFACES
 import { LoadProducts } from '../interfaces/load-products.interface';
+import { LoadInventory } from '../interfaces/load-inventory.interface';
 
 // ENVIRONMENT
 import { environment } from '../../environments/environment';
-import { LoadInventory } from '../interfaces/load-inventory.interface';
-import { Inventory } from '../models/inventory.model';
 
 const base_url = environment.base_url;
 

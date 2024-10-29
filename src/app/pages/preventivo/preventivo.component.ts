@@ -18,6 +18,8 @@ import { Inventory } from 'src/app/models/inventory.model';
 import { LogProduct } from 'src/app/models/logproducts.model';
 import { LogproductsService } from 'src/app/services/logproducts.service';
 
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-preventivo',
@@ -28,6 +30,7 @@ import { LogproductsService } from 'src/app/services/logproducts.service';
 export class PreventivoComponent implements OnInit {
 
   public user!: User;
+  public local_url = environment.local_url;
 
   constructor(  private activatedRoute: ActivatedRoute,
                 private preventivesService: PreventivesService,
@@ -494,6 +497,25 @@ export class PreventivoComponent implements OnInit {
     }else{
       return false;
     }
+
+  }
+
+  /** ===================================================================
+   * DEL ITEMS
+  ======================================================================= */
+  deleteItem(item: any){
+
+    this.preventivesService.deleteItemPreventive(this.preventive.preid!, item)
+        .subscribe( ({preventive}) =>{
+          
+          this.preventive.items = preventive.items;
+          this.loadLogs(preventive.product._id);
+          Swal.fire('Estupendo', 'se ha eliminado el item correctamente!', 'success');
+
+        }, (err) => {
+          console.log(err);
+          Swal.fire('Error', err.error.msg, 'error');          
+        })
 
   }
 

@@ -18,6 +18,7 @@ import { Inventory } from 'src/app/models/inventory.model';
 import { SearchService } from 'src/app/services/search.service';
 import { LogproductsService } from 'src/app/services/logproducts.service';
 import { LogProduct } from 'src/app/models/logproducts.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-correctivo',
@@ -28,6 +29,7 @@ import { LogProduct } from 'src/app/models/logproducts.model';
 export class CorrectivoComponent implements OnInit {
 
   public user!: User;
+  public local_url = environment.local_url;
 
   constructor(  private activatedRoute: ActivatedRoute,
                 private correctivesService: CorrectivesService,
@@ -594,6 +596,25 @@ export class CorrectivoComponent implements OnInit {
           this.addItemForm.reset({
             type: 'Salida'
           });
+
+        }, (err) => {
+          console.log(err);
+          Swal.fire('Error', err.error.msg, 'error');          
+        })
+
+  }
+
+  /** ===================================================================
+   * DEL ITEMS
+  ======================================================================= */
+  deleteItem(item: any){
+
+    this.correctivesService.deleteItemCorrective(this.corrective.coid!, item)
+        .subscribe( ({corrective}) =>{
+          
+          this.corrective.items = corrective.items;
+          this.loadLogs(corrective.product._id);
+          Swal.fire('Estupendo', 'se ha eliminado el item correctamente!', 'success');
 
         }, (err) => {
           console.log(err);
