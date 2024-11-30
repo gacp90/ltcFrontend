@@ -1,0 +1,184 @@
+<!-- HISTORIAL PAGINAS -->
+<div class="card w-100">
+    <div class="card-body">
+        <h4 class="card-title">Historial de paginas</h4>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#new-pagina">
+            Agregar
+        </button>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Total Impresas</th>
+                        <th>Impresas</th>
+                        <th>Total Copias</th>
+                        <th>Copias</th>
+                        <th>Total Scaner</th>
+                        <th>Scaner</th>
+                        <th>Totales</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                        <th>Img</th>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="paginas.length == 0">
+                        <td colspan="9">
+                            <h3 class="mb-0 text-center"> Aun no existen registros de historial de paginas impresas </h3>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let pagina of paginas; let i = index">
+                        
+                        <td>                            
+                            {{pagina.total}}
+                        </td>
+                        <td class="fw-bold">{{pagina.qty}}</td>
+                        <td>{{pagina.copia || 0}}</td>
+                        <td class="fw-bold">{{pagina.qtyc || 0}}</td>
+                        <td>{{pagina.scaner || 0}}</td>
+                        <td class="fw-bold">{{pagina.qtys || 0}}</td>
+                        <td class="fw-bold"> {{ pagina.qty + pagina.qtys + pagina.qtyc }} </td>
+                        <td>
+                            {{pagina.staff.name}}
+                        </td>
+                        <td>{{pagina.fecha | date: 'short'}}</td>
+                        <td>
+
+                            <a href="{{local_url}}/api/uploads/paginas/{{pagina.img}}" target="_blank">
+                                <img [src]=" pagina.img | imagen: 'paginas' " alt="user" width="40" class="img-circle" />
+                            </a>
+                        </td>
+                        <td>
+                            <button *ngIf="i === 0" (click)="setForm(pagina)" type="button" data-toggle="modal" data-target="#edit-pagina" class="btn btn-sm btn-icon btn-pure btn-outline text-primary delete-row-btn">
+                                <i aria-hidden="true" class="ti-pencil"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- NEW PAGEAS MODAL -->
+<!-- ============================================================== -->
+<div id="new-pagina" class="modal fade in">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Crear historial de pagina</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- IMGS  -->
+
+                <div class="form-group file-area border">
+                    <input #fileImg (change)="cambiarImage($event)" type="file" name="images" id="images" required="required" multiple="multiple" />
+                    <div class="file-dummy">
+
+                        <div class="default py-5">
+                            <h5 class="text-center card-title text-muted">
+                                Agregar Imagen
+                            </h5>
+                            <p class="text-center card-text fs-2 mb-0">
+                                <i class="mdi mdi-plus"></i>
+                            </p>
+                            <p class="text-center card-text fs-sm">Arrastre la imagen ó dar click aquí</p>
+                        </div>
+
+                        <!-- IMG VALIDA -->
+                        <div class="success">
+
+                            <div class="d-flex justify-content-center" *ngIf="imgTempP">
+                                <div class="mx-auto" style="background-image: url({{imgTempP}});width: 400px; height: 300px; background-repeat: no-repeat; background-size: cover; background-position: center center;"></div>
+                            </div>
+
+                        </div>
+                        <!-- IMG VALIDA -->
+                    </div>
+                </div>
+
+                <div *ngIf="imgTempP" class="d-flex justify-content-between flex-wrap pt-4 gap-2">
+                    <button type="button" class="btn btn-danger btn-sm" (click)="imgTempP = ''; fileImg.value = ''"> Eliminar </button>
+                </div>
+
+                <!-- IMGS  -->
+
+
+                <hr>
+
+                <!-- FORMULARIO -->
+                <div class="col-sm-12 col-xs-12">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Total de impresas</label>
+                            <input type="number" min="0" #totalP class="form-control" id="exampleInputEmail1" placeholder="Agregue el total de paginas impresas">
+                        </div>
+                        <div class="form-group">
+                            <label for="incopia">Total de copias</label>
+                            <input type="number" min="0" #totalC class="form-control" id="incopia" placeholder="Agregue el total de paginas impresas">
+                        </div>
+                        <div class="form-group">
+                            <label for="inscaner">Total de scaner</label>
+                            <input type="number" min="0" #totalS class="form-control" id="inscaner" placeholder="Agregue el total de paginas impresas">
+                        </div>
+                        <button [disabled]="!subirImagen" (click)="crearPagina(totalP.value, totalC.value, totalS.value)" type="button" class="btn btn-success waves-effect waves-light m-r-10">Crear</button>
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer ">
+
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<!-- ============================================================== -->
+<!-- NEW UPDATE MODAL -->
+<!-- ============================================================== -->
+<div id="edit-pagina" class="modal fade in">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Actualizar historial de paginas</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- FORMULARIO -->
+                <div class="col-sm-12 col-xs-12">
+                    <form [formGroup]="updateForm" (ngSubmit)="update()">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Total de impresas</label>
+                            <input formControlName="total" type="number" min="0" class="form-control" id="exampleInputEmail1" placeholder="Agregue el total de paginas impresas">
+                        </div>
+                        <div class="form-group">
+                            <label for="incopia">Total de copias</label>
+                            <input formControlName="copia" type="number" min="0" class="form-control" id="incopia" placeholder="Agregue el total de paginas impresas">
+                        </div>
+                        <div class="form-group">
+                            <label for="inscaner">Total de scaner</label>
+                            <input formControlName="scaner" type="number" min="0" class="form-control" id="inscaner" placeholder="Agregue el total de paginas impresas">
+                        </div>
+                        <button type="submit" class="btn btn-success waves-effect waves-light m-r-10">Actualizar</button>
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer ">
+
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

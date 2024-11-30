@@ -37,6 +37,7 @@ import { MovimientosComponent } from './movimientos/movimientos.component';
 import { FacturarComponent } from './facturar/facturar.component';
 import { FacturasComponent } from './facturas/facturas.component';
 import { FacturaComponent } from './factura/factura.component';
+import { AddpagesComponent } from './components/addpages/addpages.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import { FacturaComponent } from './factura/factura.component';
     MovimientosComponent,
     FacturarComponent,
     FacturasComponent,
-    FacturaComponent
+    FacturaComponent,
+    AddpagesComponent
   ],
   exports:[
     DashboardComponent,

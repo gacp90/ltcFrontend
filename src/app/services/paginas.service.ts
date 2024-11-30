@@ -57,4 +57,11 @@ export class PaginasService {
     return this.http.post<{ok: boolean, paginas: Pagina[], total: number}>( `${base_url}/paginas/query`, query, this.headers );
   }
 
+  /** ================================================================
+   *   PUT UPDATE PAGINA
+  ==================================================================== */
+  updatePagina(formData: any, id: string){
+    return this.http.put<{ok: boolean, pagina: Pagina}>( `${base_url}/paginas/${id}`, formData, this.headers );
+  }
+
 }
